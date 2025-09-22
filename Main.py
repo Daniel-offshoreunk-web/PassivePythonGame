@@ -156,7 +156,7 @@ Gambling""",\
                 draws = self.luck
             draws = round(draws)
             for i in range(draws):
-                recent_chance = round(random.random() * 100, 5)
+                recent_chance = round(random.random() * 100, 8)
                 if recent_chance > top_chance:
                     top_chance = recent_chance
             self.draw_chance = top_chance
@@ -175,6 +175,12 @@ Gambling""",\
             self.rarity("white", "Beyond I", 450000000, 99.999, '')
             self.rarity("white", "Beyond II", 4500000000, 99.99975, '')
             self.rarity("white", "Beyond III", 45000000000, 99.99999, '')
+            self.rarity("red", "Infernal I", 450000000000, 99.9999975, '')
+            self.rarity("red", "Infernal II", 4500000000000, 99.9999995, '')
+            self.rarity("red", "Infernal III", 45000000000000, 99.9999999, '')
+            self.rarity("yellow", "Celestial I", 450000000000000, 99.999999975, '')
+            self.rarity("yellow", "Celestial II", 4500000000000000, 99.999999995, '')
+            self.rarity("yellow", "Celestial III", 4500000000000000, 99.999999999, '')
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
