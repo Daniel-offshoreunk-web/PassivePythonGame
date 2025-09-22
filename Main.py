@@ -12,7 +12,7 @@ def format_number(num):
     elif abs(num) >= 1_000_000_000_000_000:
         return f"{num / 1_000_000_000_000_000:.2f}Qd"
     elif abs(num) >= 1_000_000_000_000:
-        return f"{num / 1_000_000_000_000:.2f}Qd
+        return f"{num / 1_000_000_000_000:.2f}T"
     elif abs(num) >= 1_000_000_000:
         return f"{num / 1_000_000_000:.2f}B"
     elif abs(num) >= 1_000_000:
