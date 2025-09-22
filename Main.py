@@ -30,6 +30,10 @@ class Game:
         self.cooldowntime = 0.5
         self.main_frame = Frame(self.tk)
         self.main_frame.pack(fill=BOTH, expand=1)
+        self.luck_boost_used = False
+        self.super_luck_boost_used = False
+        self.bt_luck = 0
+        self.sbt_luck = 0
 
         #Load game data on startup
         game_data = l.load_game()
@@ -147,7 +151,11 @@ Gambling""",\
     def ondraw(self, event):
         if self.cooldown() == True:
             top_chance = 0
-            for i in range(self.luck):
+            draws = 1
+            if self.luck >= 1:
+                draws = self.luck
+            draws = round(draws)
+            for i in range(draws):
                 recent_chance = round(random.random() * 100, 5)
                 if recent_chance > top_chance:
                     top_chance = recent_chance
@@ -164,7 +172,7 @@ Gambling""",\
             self.rarity("cyan", "Immortal I", 450000, 99.9, '')
             self.rarity("cyan", "Immortal II", 4500000, 99.925, '')
             self.rarity("cyan", "Immortal III", 45000000, 99.99, '')
-            self.rarity("white", "Byeond I", 450000000, 99.999, '')
+            self.rarity("white", "Beyond I", 450000000, 99.999, '')
             self.rarity("white", "Beyond II", 4500000000, 99.99975, '')
             self.rarity("white", "Beyond III", 45000000000, 99.99999, '')
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
@@ -221,16 +229,44 @@ Gambling""",\
             else:
                 full_string = f"You need ${format_number(self.cv_cost)} to upgrade this."
                 self.info_list.insert("0.0", full_string+'\n')
-    
+
+    def luck_boost(self):
+        self.luck *= 2
+        self.bt_luck += 300
+        self.luck_boost_used = True
+
+    def super_luck_boost(self):
+        self.luck *= 10
+        self.sbt_luck += 300
+        self.auper_luck_boost_used = True
+        
     def update_cash_display(self):
+        #Also manages boosts
         self.cash += self.cps * self.cm
         self.cash_var.set(f"Cash: ${format_number(self.cash)}")
+        
+        if random.random() >= 0.998:
+            self.info_list.insert("0.0","Luck boost is activate for five minutes!\n")
+            self.luck_boost()
+        if random.random() >= 0.9995:
+            self.info_list.insert("0.0","Super luck boost is active for five minutes!\n")
+            self.super_luck_boost()
+        if self.bt_luck == 0 and self.luck_boost_used == True:
+            self.luck /= 2
+            self.luck_boost_used = False
+        if self.sbt_luck == 0 and self.super_luck_boost_used == True:
+            self.luck /= 10
+            self.super_luck_boost_used = False
+        if not self.bt_luck == 0:
+            self.bt_luck -= 1
+        if not self.sbt_luck == 0:
+            self.sbt_luck -= 1
         
         # Schedule the next call to this function after 1000ms (1 second)
         self.tk.after(1000, self.update_cash_display)
 
 try:
-    with open("GameMainFrame", "r") as f:
+    with open("GameMainFrame.csv", "r") as f:
         f.close
 except Exception as e:
     reset()

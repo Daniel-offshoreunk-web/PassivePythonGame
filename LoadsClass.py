@@ -80,7 +80,6 @@ class loads:
         return stuff
     def save_game(self, gameclass):
         global df
-        print("Saving...")
         df.iloc[self.row,0] = gameclass.cash
         df.iloc[self.row,1] = gameclass.cps
         df.iloc[self.row,2] = gameclass.cps_cost
