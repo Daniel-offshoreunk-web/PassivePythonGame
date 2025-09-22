@@ -33,20 +33,14 @@ class loads:
     def read_all(self):
         global df
         self.answer = self.input_box.get()
-        print(self.answer)
         self.answer1 = self.input_box1.get()
-        print(self.answer1)
         try:
             self.row = df[df["Username"] == self.answer].index[0]
-            print("It worked!")
             if self.answer1 == df.loc[self.row, 'Password']:
                 self.tk.destroy()
                 self.access_granted = True
-            else:
-                print("Incorrect Password")
         except Exception as e:
             self.fail = e
-            print(self.fail)
     def create_new_account(self):
         #Recreate Window
         self.tk.destroy()
@@ -69,19 +63,15 @@ class loads:
         self.tk.mainloop()
     def create_account(self):
         self.answer = self.input_box.get()
-        print(self.answer)
         self.answer1 = self.input_box1.get()
-        print(self.answer1)
         try:
             if not df['Username'].eq(self.answer).any() == True:
                 df.loc[len(df)] = [0.0, 0.0, 10, 1, 100, 1, 100, time.time(), 1, self.answer, self.answer1]
                 self.row = len(df) - 1
                 self.access_granted = True
                 self.tk.destroy()
-            else:
-                print("This name is already taken")
         except Exception as e:
-            print(e)
+            self.failure = e
     def load_game(self):
         global df
         stuff = []

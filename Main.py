@@ -3,6 +3,7 @@ import time
 import random
 import pandas as pd
 from LoadsClass import *
+from ResetCSV import *
 
 #Format Number Function
 def format_number(num):
@@ -67,13 +68,13 @@ class Game:
                                                    fill="black", \
                                                    font=("Impact", 55, "bold"))
         #Upgrade Cps
-        self.upgrade_button_rect =  self.canvas.create_rectangle(250, 300, 500, 400, fill="green", \
+        self.upgrade_button_rect =  self.canvas.create_rectangle(250, 300, 500, 400, fill="cyan", \
                                                                  outline="black")
         self.upgrade_button_text = self.canvas.create_text(375, 350, text='Upgrade CPS',\
                                                            fill="black", \
                                                            font=("Impact",25,"bold"))
         #Upgrade Cps%
-        self.cm_upgrade_button_rect = self.canvas.create_rectangle(0, 300, 250, 400, fill="green", \
+        self.cm_upgrade_button_rect = self.canvas.create_rectangle(0, 300, 250, 400, fill="cyan", \
                                                                    outline="black")
         self.cm_upgrade_button_text = self.canvas.create_text(125, 350, text="Upgrade CPS%",\
                                                            fill="black", font=("Impact",25,"bold"))
@@ -83,7 +84,7 @@ class Game:
         self.cv_upgrade_button_text = self.canvas.create_text(125, 250, text="""Upgrade
 Gambling""",\
                                                            fill="black", font=("Impact",25,"bold"))
-        
+
         #Results Box
         self.carddrawn = ""
         self.result_rect = self.canvas.create_rectangle(0,400,300,500, \
@@ -128,7 +129,6 @@ Gambling""",\
         global l
         l.save_game(self)
         self.tk.destroy()
-        print("Game Saved!")
 
     def cooldown(self):
         if time.time() - self.last_click_time >= self.cooldowntime:
@@ -152,7 +152,6 @@ Gambling""",\
                 if recent_chance > top_chance:
                     top_chance = recent_chance
             self.draw_chance = top_chance
-            print(top_chance)
             self.rarity("grey", "Common", 1, 0,'')
             self.rarity("Lightgreen", "Uncommon", 2, 50,'')
             self.rarity("Lightblue", "Rare", 7, 75,'')
@@ -230,6 +229,11 @@ Gambling""",\
         # Schedule the next call to this function after 1000ms (1 second)
         self.tk.after(1000, self.update_cash_display)
 
+try:
+    with open("GameMainFrame", "r") as f:
+        f.close
+except Exception as e:
+    reset()
 l = loads()
 if l.access_granted == True:
     g = Game()
