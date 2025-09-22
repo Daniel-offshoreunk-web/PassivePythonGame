@@ -10,7 +10,7 @@ def format_number(num):
     if abs(num) >= 1_000_000_000_000_000_000:
         return f"{num / 1_000_000_000_000_000_000:.2f}Qn"
     elif abs(num) >= 1_000_000_000_000_000:
-        return f"{num / 1_000_000_000_000_000:.2f}Qd
+        return f"{num / 1_000_000_000_000_000:.2f}Qd"
     elif abs(num) >= 1_000_000_000_000:
         return f"{num / 1_000_000_000_000:.2f}Qd
     elif abs(num) >= 1_000_000_000:
