@@ -193,13 +193,24 @@ Gambling""",\
             cost_of_next_upgrade = self.cps_cost
             upgrades_to_buy = 0
             total_cost = 0
-
-            while cash_available >= cost_of_next_upgrade:
-                cash_available -= cost_of_next_upgrade
-                total_cost += cost_of_next_upgrade
-                cost_of_next_upgrade += 5
-                upgrades_to_buy += 1
-                
+            if not cash_available >= 1000 * cost_of_next_upgrade:
+                while cash_available >= cost_of_next_upgrade:
+                    cash_available -= cost_of_next_upgrade
+                    total_cost += cost_of_next_upgrade
+                    cost_of_next_upgrade += 5
+                    upgrades_to_buy += 1
+            elif not cash_available >= 1000000:
+                while cash_available >= cost_of_next_upgrade:
+                    cash_available -= 100 * cost_of_next_upgrade
+                    total_cost += 100 * cost_of_next_upgrade
+                    cost_of_next_upgrade += 500
+                    upgrades_to_buy += 100
+            else:
+                while cash_available >= cost_of_next_upgrade:
+                    cash_available -= 100000 * cost_of_next_upgrade
+                    total_cost += 100000 * cost_of_next_upgrade
+                    cost_of_next_upgrade += 500000
+                    upgrades_to_buy += 100000
             if upgrades_to_buy > 0:
                 ogcps = self.cps
                 self.cash -= total_cost
