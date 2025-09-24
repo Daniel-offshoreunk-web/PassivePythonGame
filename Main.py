@@ -1,9 +1,9 @@
 from tkinter import *
 import time
 import random
-import pandas as pd
 from LoadsClass import *
 from ResetCSV import *
+from Achivements import *
 
 #Format Number Function
 def format_number(num):
@@ -52,6 +52,8 @@ class Game:
         offlinecash = offlinetime / 2
         self.cash += self.cps * offlinecash
         self.luck = game_data[8]
+        string11 = str(game_data[9])
+        self.bools = achivements.breaktobool(string11)
         
         #Cash
         self.cash_var = StringVar()
@@ -101,6 +103,12 @@ Gambling""",\
         self.result_text = self.canvas.create_text(150,450, text="", fill="black",\
                                                    font=("Impact",45, "bold"))
 
+        #Achivements Button
+        self.a_button_rect = self.canvas.create_rectangle(250, 200, 500, 300, fill="yellow", \
+                                                          outline="black")
+        self.a_button_text = self.canvas.create_text(375, 250, text="Achivements", fill="black",\
+                                                     font=("Impact", 25, "bold"))
+
         #Info
         self.list_frame = Frame(self.canvas, background="#FFFFFF", width=10, height=20)
         self.canvas.create_window((0, 0), window=self.list_frame, anchor="nw")
@@ -116,7 +124,7 @@ Gambling""",\
         def on_canvas_configure(event):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         self.list_frame.bind("<Configure>", on_canvas_configure)
-        
+
         #Bind Buttons
         self.canvas.tag_bind(self.button_rect, "<Button-1>", self.ondraw)
         self.canvas.tag_bind(self.button_text, "<Button-1>", self.ondraw)
@@ -126,6 +134,8 @@ Gambling""",\
         self.canvas.tag_bind(self.cm_upgrade_button_text, "<Button-1>", self.cmupgrade)
         self.canvas.tag_bind(self.cv_upgrade_button_rect, "<Button-1>", self.cvupgrade)
         self.canvas.tag_bind(self.cv_upgrade_button_text, "<Button-1>", self.cvupgrade)
+        self.canvas.tag_bind(self.a_button_rect, "<Button-1>", self.achivements)
+        self.canvas.tag_bind(self.a_button_text, "<Button-1>", self.achivements)
 
         #Save on Exit
         self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -135,7 +145,7 @@ Gambling""",\
 
     def on_closing(self):
         global l
-        l.save_game(self)
+        l.save_game(self, achivements.fusetobool(self.bools))
         self.tk.destroy()
 
     def cooldown(self):
@@ -153,6 +163,7 @@ Gambling""",\
                 exec(extra)
         
     def ondraw(self, event):
+        self.bools[1] = True
         if self.cooldown() == True:
             top_chance = 0
             draws = 1
@@ -174,7 +185,7 @@ Gambling""",\
             self.rarity("black", "Unknown", 4000, 99.5, 'self.canvas.itemconfigure(self.result_text, fill="white")')
             self.rarity("black", "Unknown+", 45000, 99.75, 'self.canvas.itemconfigure(self.result_text, fill="white")')
             self.rarity("cyan", "Immortal-", 450000, 99.9, '')
-            self.rarity("cyan", "Immortal", 4500000, 99.925, '')
+            self.rarity("cyan", "Immortal", 4500000, 99.925, 'self.bools[3] = True')
             self.rarity("cyan", "Immortal+", 45000000, 99.99, '')
             self.rarity("white", "Beyond-", 450000000, 99.999, '')
             self.rarity("white", "Beyond", 4500000000, 99.99975, '')
@@ -184,10 +195,11 @@ Gambling""",\
             self.rarity("red", "Infernal+", 45000000000000, 99.9999999, '')
             self.rarity("yellow", "Celestial-", 450000000000000, 99.999999975, '')
             self.rarity("yellow", "Celestial", 4500000000000000, 99.999999995, '')
-            self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, '')
+            self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True')
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
+        self.bools[2] = True
         if self.cooldown() == True:
             cash_available = self.cash
             cost_of_next_upgrade = self.cps_cost
@@ -200,13 +212,14 @@ Gambling""",\
                     cost_of_next_upgrade += 5
                     upgrades_to_buy += 1
             elif not cash_available >= 1000000:
-                while cash_available >= cost_of_next_upgrade:
+                while cash_available >= cost_of_next_upgrade * 100:
                     cash_available -= 100 * cost_of_next_upgrade
                     total_cost += 100 * cost_of_next_upgrade
                     cost_of_next_upgrade += 500
                     upgrades_to_buy += 100
+                        
             else:
-                while cash_available >= cost_of_next_upgrade:
+                while cash_available >= cost_of_next_upgrade * 100000:
                     cash_available -= 100000 * cost_of_next_upgrade
                     total_cost += 100000 * cost_of_next_upgrade
                     cost_of_next_upgrade += 500000
@@ -250,6 +263,9 @@ Gambling""",\
             else:
                 full_string = f"You need ${format_number(self.cv_cost)} to upgrade this."
                 self.info_list.insert("0.0", full_string+'\n')
+    def achivements(self, event):
+        self.a = achivements()
+        self.a.check_all(self.bools)
 
     def luck_boost(self):
         self.luck *= 2
@@ -260,6 +276,7 @@ Gambling""",\
         self.luck *= 10
         self.sbt_luck += 300
         self.auper_luck_boost_used = True
+        self.bools[5] = True
         
     def update_cash_display(self):
         #Also manages boosts

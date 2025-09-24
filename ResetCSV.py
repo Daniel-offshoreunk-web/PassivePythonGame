@@ -14,7 +14,8 @@ def reset():
         "Last Online": [time.time()],
         "Luck": [1],
         "Username": ["PLAYERONE"],
-        "Password": ["password"]
+        "Password": ["password"],
+        "Achivements": ["100000000000"]
         })
     with open("GameMainFrame.csv", "w") as f:
         f.close()

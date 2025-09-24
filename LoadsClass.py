@@ -66,7 +66,7 @@ class loads:
         self.answer1 = self.input_box1.get()
         try:
             if not df['Username'].eq(self.answer).any() == True:
-                df.loc[len(df)] = [0.0, 0.0, 10, 1, 100, 1, 100, time.time(), 1, self.answer, self.answer1]
+                df.loc[len(df)] = [0.0, 0.0, 10, 1, 100, 1, 100, time.time(), 1, self.answer, self.answer1, "100000000000"]
                 self.row = len(df) - 1
                 self.access_granted = True
                 self.tk.destroy()
@@ -77,8 +77,9 @@ class loads:
         stuff = []
         for i in range(9):
             stuff.append(df.iat[self.row,i])
+        stuff.append(df.iat[self.row, 11])
         return stuff
-    def save_game(self, gameclass):
+    def save_game(self, gameclass, string):
         global df
         df.iloc[self.row,0] = gameclass.cash
         df.iloc[self.row,1] = gameclass.cps
@@ -89,6 +90,7 @@ class loads:
         df.iloc[self.row,6] = gameclass.cv_cost
         df.iloc[self.row,7] = time.time()
         df.iloc[self.row,8] = gameclass.luck
+        df.iloc[self.row,11] = string
         with open("GameMainFrame.csv","w") as f:
             f.write("Saving...")
         df.to_csv('GameMainFrame.csv', index=False)
