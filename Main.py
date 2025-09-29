@@ -355,7 +355,7 @@ Gambling""",\
         self.cash = 0
         self.cps = 0
         self.cps_cost = 10
-        if self.prestiges = 3:
+        if self.prestiges == 3:
             self.info_list.insert("0.0", "You now gain cps boost from prestige!\n")
         if self.prestiges>= 3:
             from3 = self.prestiges - 2
@@ -365,7 +365,7 @@ Gambling""",\
         self.cm_cost = 100
         self.cv = 1
         self.cv_cost = 100
-        if self.prestiges = 1:
+        if self.prestiges == 1:
             self.info_list.insert("0.0", "I wonder if you'll get more boost later...\n")
             self.info_list.insert("0.0", "You currently gain luck boost from prestige.\n")
         self.luck = self.prestiges
