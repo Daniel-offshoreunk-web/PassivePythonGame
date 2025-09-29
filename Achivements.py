@@ -65,6 +65,10 @@ A LOT""", "orange", "cyan", 100, 200)
 GRIND""", "red", "white", 200, 200)
         self.achive_check(bools[9], """DONE
 HERE""", "pink", "purple", 0, 300)
+        self.achive_check(bools[10], """TOUCH
+GRASS""", "blue", "green",  100, 300)
+        self.achive_chack(bools[11], """CHEAT
+2 WIN""", "black", "red", 200, 300)
 
 ##bools = [True, True, False, False, False, False, False, False, False, False, False, False]   
 ##a = achivements()

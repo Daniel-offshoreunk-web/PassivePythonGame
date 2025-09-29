@@ -56,6 +56,8 @@ class Game:
         self.bools = achivements.breaktobool(string11)
         self.prestiges = game_data[10]
         self.drawsingame = 0
+        if offlinetime > 3600:
+            bools[10] = True
         
         #Cash
         self.cash_var = StringVar()
