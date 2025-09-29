@@ -57,6 +57,14 @@ DRAW""", "orange", "green", 0, 100)
 DRAW""", "yellow", "white", 100, 100)
         self.achive_check(bools[5], """LUCKY
 BOOST""", "cyan", "green", 200, 100)
+        self.achive_check(bools[6], """LETS
+GO...""", "red", "orange", 0, 200)
+        self.achive_check(bools[7], """DRAW
+A LOT""", "orange", "cyan", 100, 200)
+        self.achive_check(bools[8], """ON THE
+GRIND""", "red", "white", 200, 200)
+        self.achive_check(bools[9], """DONE
+HERE""", "pink", "purple", 0, 300)
 
 ##bools = [True, True, False, False, False, False, False, False, False, False, False, False]   
 ##a = achivements()

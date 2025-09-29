@@ -54,6 +54,8 @@ class Game:
         self.luck = game_data[8]
         string11 = str(game_data[9])
         self.bools = achivements.breaktobool(string11)
+        self.prestiges = game_data[10]
+        self.drawsingame = 0
         
         #Cash
         self.cash_var = StringVar()
@@ -78,13 +80,13 @@ class Game:
                                                    fill="black", \
                                                    font=("Impact", 55, "bold"))
         #Upgrade Cps
-        self.upgrade_button_rect =  self.canvas.create_rectangle(250, 300, 500, 400, fill="cyan", \
+        self.upgrade_button_rect =  self.canvas.create_rectangle(250, 300, 500, 400, fill="cyan3", \
                                                                  outline="black")
         self.upgrade_button_text = self.canvas.create_text(375, 350, text='Upgrade CPS',\
                                                            fill="black", \
                                                            font=("Impact",25,"bold"))
         #Upgrade Cps%
-        self.cm_upgrade_button_rect = self.canvas.create_rectangle(0, 300, 250, 400, fill="cyan", \
+        self.cm_upgrade_button_rect = self.canvas.create_rectangle(0, 300, 250, 400, fill="cyan3", \
                                                                    outline="black")
         self.cm_upgrade_button_text = self.canvas.create_text(125, 350, text="Upgrade CPS%",\
                                                            fill="black", font=("Impact",25,"bold"))
@@ -104,7 +106,7 @@ Gambling""",\
                                                    font=("Impact",45, "bold"))
 
         #Achivements Button
-        self.a_button_rect = self.canvas.create_rectangle(250, 200, 500, 300, fill="yellow", \
+        self.a_button_rect = self.canvas.create_rectangle(250, 200, 500, 300, fill="yellow3", \
                                                           outline="black")
         self.a_button_text = self.canvas.create_text(375, 250, text="Achivements", fill="black",\
                                                      font=("Impact", 25, "bold"))
@@ -128,14 +130,35 @@ Gambling""",\
         #Bind Buttons
         self.canvas.tag_bind(self.button_rect, "<Button-1>", self.ondraw)
         self.canvas.tag_bind(self.button_text, "<Button-1>", self.ondraw)
+        self.canvas.tag_bind(self.button_rect, "<Enter>", self.enter_draw)        
+        self.canvas.tag_bind(self.button_rect, "<Leave>", self.leave_draw)
+        self.canvas.tag_bind(self.button_text, "<Enter>", self.enter_draw)
+        self.canvas.tag_bind(self.button_text, "<Leave>", self.leave_draw)
         self.canvas.tag_bind(self.upgrade_button_rect, "<Button-1>", self.cpsupgrade)
         self.canvas.tag_bind(self.upgrade_button_text, "<Button-1>", self.cpsupgrade)
+        self.canvas.tag_bind(self.upgrade_button_rect, "<Enter>", self.enter_cps)
+        self.canvas.tag_bind(self.upgrade_button_rect, "<Leave>", self.leave_cps)
+        self.canvas.tag_bind(self.upgrade_button_text, "<Enter>", self.enter_cps)
+        self.canvas.tag_bind(self.upgrade_button_text, "<Leave>", self.leave_cps)
         self.canvas.tag_bind(self.cm_upgrade_button_rect, "<Button-1>", self.cmupgrade)
         self.canvas.tag_bind(self.cm_upgrade_button_text, "<Button-1>", self.cmupgrade)
+        self.canvas.tag_bind(self.cm_upgrade_button_rect, "<Enter>", self.cm_enter)
+        self.canvas.tag_bind(self.cm_upgrade_button_rect, "<Leave>", self.cm_leave)
+        self.canvas.tag_bind(self.cm_upgrade_button_text, "<Enter>", self.cm_enter)
+        self.canvas.tag_bind(self.cm_upgrade_button_text, "<Leave>", self.cm_leave)
         self.canvas.tag_bind(self.cv_upgrade_button_rect, "<Button-1>", self.cvupgrade)
         self.canvas.tag_bind(self.cv_upgrade_button_text, "<Button-1>", self.cvupgrade)
+        self.canvas.tag_bind(self.cv_upgrade_button_rect, "<Enter>", self.enter_cv)
+        self.canvas.tag_bind(self.cv_upgrade_button_rect, "<Leave>", self.leave_cv)
+        self.canvas.tag_bind(self.cv_upgrade_button_text, "<Enter>", self.enter_cv)
+        self.canvas.tag_bind(self.cv_upgrade_button_text, "<Leave>", self.leave_cv)
         self.canvas.tag_bind(self.a_button_rect, "<Button-1>", self.achivements)
         self.canvas.tag_bind(self.a_button_text, "<Button-1>", self.achivements)
+        self.canvas.tag_bind(self.a_button_rect, "<Enter>", self.enter_a)
+        self.canvas.tag_bind(self.a_button_rect, "<Leave>", self.leave_a)
+        self.canvas.tag_bind(self.a_button_text, "<Enter>", self.enter_a)
+        self.canvas.tag_bind(self.a_button_text, "<Leave>", self.leave_a)
+        
 
         #Save on Exit
         self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -164,16 +187,21 @@ Gambling""",\
         
     def ondraw(self, event):
         self.bools[1] = True
+        self.drawsingame += 1
+        if self.drawsingame >= 100:
+            self.bools[7] = True
+        if self.drawsingame >= 1000:
+            self.bools[8] = True
         if self.cooldown() == True:
             top_chance = 0
             draws = 1
             if self.luck >= 1:
                 draws = self.luck
             draws = round(draws)
-            for i in range(draws):
-                recent_chance = round(random.random() * 100, 8)
-                if recent_chance > top_chance:
-                    top_chance = recent_chance
+            percentile = 100 / draws
+            chance = random.random() * percentile
+            maxedchance = 100 - percentile
+            top_chance = maxedchance + chance
             self.draw_chance = top_chance
             self.rarity("grey", "Common", 1, 0,'')
             self.rarity("Lightgreen", "Uncommon", 2, 50,'')
@@ -196,6 +224,7 @@ Gambling""",\
             self.rarity("yellow", "Celestial-", 450000000000000, 99.999999975, '')
             self.rarity("yellow", "Celestial", 4500000000000000, 99.999999995, '')
             self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True')
+            self.rarity("green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()')
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
@@ -250,6 +279,7 @@ Gambling""",\
                 self.info_list.insert("0.0", full_string+'\n')
 
     def cvupgrade(self, event):
+        self.bools[6] = True
         if self.cooldown() == True:
             if self.cash > self.cv_cost or self.cash == self.cv_cost:
                 self.cash -= self.cv_cost
@@ -279,7 +309,7 @@ Gambling""",\
         self.bools[5] = True
         
     def update_cash_display(self):
-        #Also manages boosts
+        #Also manages boosts and prestige
         self.cash += self.cps * self.cm
         self.cash_var.set(f"Cash: ${format_number(self.cash)}")
         
@@ -299,9 +329,84 @@ Gambling""",\
             self.bt_luck -= 1
         if not self.sbt_luck == 0:
             self.sbt_luck -= 1
+        if self.cash >= 1000000000000000000:
+            self.prestige_time()
         
         # Schedule the next call to this function after 1000ms (1 second)
         self.tk.after(1000, self.update_cash_display)
+    def prestige_time(self):
+        self.button_rect = self.canvas.create_rectangle(300, 400, 500, 500, \
+                                                    fill="white", \
+                                                    outline='black')
+        self.button_text = self.canvas.create_text(400, 450, text="PRESTIGE",\
+                                                   fill="black", \
+                                                   font=("Impact", 38, "bold"))
+        self.canvas.tag_bind(self.button_rect, "<Button-1>", self.prestige)
+        self.canvas.tag_bind(self.button_text, "<Button-1>", self.prestige)
+        self.canvas.tag_bind(self.button_rect, "<Enter>", self.enter_p)        
+        self.canvas.tag_bind(self.button_rect, "<Leave>", self.leave_p)
+        self.canvas.tag_bind(self.button_text, "<Enter>", self.enter_p)
+        self.canvas.tag_bind(self.button_text, "<Leave>", self.leave_p)
+    def prestige(self, event):
+        self.bools[9] = True
+        self.prestiges += 1
+        self.cash = 0
+        self.cps = 0
+        self.cps_cost = 10
+        if self.prestiges = 3:
+            self.info_list.insert("0.0", "You now gain cps boost from prestige!\n")
+        if self.prestiges>= 3:
+            from3 = self.prestiges - 2
+            self.cm = from3 * 3
+        else:
+            self.cm = 1
+        self.cm_cost = 100
+        self.cv = 1
+        self.cv_cost = 100
+        if self.prestiges = 1:
+            self.info_list.insert("0.0", "I wonder if you'll get more boost later...\n")
+            self.info_list.insert("0.0", "You currently gain luck boost from prestige.\n")
+        self.luck = self.prestiges
+        self.button_rect = self.canvas.create_rectangle(300, 400, 500, 500, \
+                                                    fill="green", \
+                                                    outline='black')
+        self.button_text = self.canvas.create_text(400, 450, text="Draw",\
+                                                   fill="black", \
+                                                   font=("Impact", 55, "bold"))
+        self.canvas.tag_bind(self.button_rect, "<Button-1>", self.ondraw)
+        self.canvas.tag_bind(self.button_text, "<Button-1>", self.ondraw)
+        self.canvas.tag_bind(self.button_rect, "<Enter>", self.enter_draw)        
+        self.canvas.tag_bind(self.button_rect, "<Leave>", self.leave_draw)
+        self.canvas.tag_bind(self.button_text, "<Enter>", self.enter_draw)
+        self.canvas.tag_bind(self.button_text, "<Leave>", self.leave_draw)
+        
+    def enter_draw(self, event):
+        self.canvas.itemconfigure(self.button_rect, fill="green3")
+    def leave_draw(self, event):
+        self.canvas.itemconfigure(self.button_rect, fill="green")
+    def enter_cps(self, event):
+        self.canvas.itemconfigure(self.upgrade_button_rect, fill="cyan")
+    def leave_cps(self, event):
+        self.canvas.itemconfigure(self.upgrade_button_rect, fill="cyan3")
+    def cm_enter(self, event):
+        self.canvas.itemconfigure(self.cm_upgrade_button_rect, fill="cyan")
+    def cm_leave(self, event):
+        self.canvas.itemconfigure(self.cm_upgrade_button_rect, fill="cyan3")
+    def enter_cv(self, event):
+        self.canvas.itemconfigure(self.cv_upgrade_button_rect, fill="green3")
+    def leave_cv(self, event):
+        self.canvas.itemconfigure(self.cv_upgrade_button_rect, fill="green")
+    def enter_a(self, event):
+        self.canvas.itemconfigure(self.a_button_rect, fill="yellow")
+    def leave_a(self, event):
+        self.canvas.itemconfigure(self.a_button_rect, fill="yellow3")
+    def enter_p(self, event):
+        self.canvas.itemconfigure(self.button_rect, fill="black")
+        self.canvas.itemconfigure(self.button_text, fill="white")
+    def leave_p(self, event):
+        self.canvas.itemconfigure(self.button_rect, fill="white")
+        self.canvas.itemconfigure(self.button_text, fill="black")
+        
 
 try:
     with open("GameMainFrame.csv", "r") as f:

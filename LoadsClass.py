@@ -78,6 +78,7 @@ class loads:
         for i in range(9):
             stuff.append(df.iat[self.row,i])
         stuff.append(df.iat[self.row, 11])
+        stuff.append(df.iat[self.row, 12])
         return stuff
     def save_game(self, gameclass, string):
         global df
@@ -91,6 +92,7 @@ class loads:
         df.iloc[self.row,7] = time.time()
         df.iloc[self.row,8] = gameclass.luck
         df.iloc[self.row,11] = string
+        df.iloc[self.row,12] = gameclass.prestiges
         with open("GameMainFrame.csv","w") as f:
             f.write("Saving...")
         df.to_csv('GameMainFrame.csv', index=False)
