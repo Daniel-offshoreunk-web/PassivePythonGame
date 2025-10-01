@@ -14,22 +14,29 @@ class loads:
         self.tk.title("Login")
         self.tk.resizable(0,0)
         self.tk.wm_attributes("-topmost", 1)
+        self.tk.configure(bg='lightblue')
         #Input box creation
-        self.label = Label(self.tk, text="Enter Username")
+        self.label = Label(self.tk, text="Enter Username", bg='lightblue')
         self.label.pack(pady=5)
-        self.input_box = Entry(self.tk, width=50)
-        self.input_box.pack(pady = 5)
-        self.label1 = Label(self.tk, text="Enter password")
+        self.input_box = Entry(self.tk, width=30)
+        self.input_box.pack(pady = 5, padx = 10)
+        self.label1 = Label(self.tk, text="Enter password", bg='lightblue')
         self.label1.pack(pady=5)
-        self.input_box1 = Entry(self.tk, width=50)
-        self.input_box1.pack(pady=5)
-        self.enter_button1 = Button(self.tk, text="Login", command=self.read_all)
+        self.input_box1 = Entry(self.tk, width=30)
+        self.input_box1.pack(pady=5, padx=10)
+        self.enter_button1 = Button(self.tk, text="Login", command=self.read_all, bg="green")
         self.enter_button1.pack(pady=5)
-        self.create_new_button = Button(self.tk, text="Create New Acount", command=self.create_new_account)
+        self.enter_button1.bind("<Enter>", lambda event: self.buttoncolorchange(event, self.enter_button1, "green3"))
+        self.enter_button1.bind("<Leave>", lambda event: self.buttoncolorchange(event, self.enter_button1, "green"))
+        self.create_new_button = Button(self.tk, text="Create New Acount", command=self.create_new_account, bg="green")
+        self.create_new_button.bind("<Enter>", lambda event: self.buttoncolorchange(event, self.create_new_button, "green3"))
+        self.create_new_button.bind("<Leave>", lambda event: self.buttoncolorchange(event, self.create_new_button, "green"))
         self.create_new_button.pack(pady = 5)
         self.access_granted = False
         #Start main loop
         self.tk.mainloop()
+    def buttoncolorchange(self, event, button, color):
+        button.configure(bg = color)
     def read_all(self):
         global df
         self.answer = self.input_box.get()
