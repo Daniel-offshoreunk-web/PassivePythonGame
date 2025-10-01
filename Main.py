@@ -108,7 +108,7 @@ Gambling""",\
                                                    font=("Impact",45, "bold"))
 
         #Cover for Output
-        self.animate_rect = self.canvas.create_rectangle(-300, 400, 0, 500, \
+        self.animate_rect = self.canvas.create_rectangle(0, 500, 300, 600, \
                                                          fill = "black", \
                                                          outline = "black")
 
@@ -184,18 +184,27 @@ Gambling""",\
             return True
         else:
             return False
-    def rarity(self, color, name, number, req, extra):
+    def rarity(self, color, name, number, req, extra, reveal_color):
         if self.draw_chance > req:
             self.canvas.itemconfigure(self.result_rect, fill=color)
             self.canvas.itemconfigure(self.result_text, text=name, fill="black")
+            self.canvas.itemconfigure(self.animate_rect, fill=reveal_color)
+            self.cash += number * self.cv
+            if not extra == '':
+                exec(extra)
+    def raritynew(self, color, name, number, req, extra, reveal_color):
+        if self.draw_chance > req:
+            self.canvas.itemconfigure(self.result_rect, fill=color)
+            self.canvas.itemconfigure(self.result_text, text=name, fill="black")
+            self.canvas.itemconfigure(self.animate_rect, fill=reveal_color)
             self.cash += number * self.cv
             if not extra == '':
                 exec(extra)
     def reveal(self):
         if self.current_pos > 0:
-            self.canvas.move(self.animate_rect, -1, 0)
+            self.canvas.move(self.animate_rect, 0, 1)
             self.current_pos -= 1
-            self.tk.after(1, self.reveal)
+            self.tk.after(2, self.reveal)
     def ondraw(self, event):
         self.bools[1] = True
         self.drawsingame += 1
@@ -204,8 +213,8 @@ Gambling""",\
         if self.drawsingame >= 1000:
             self.bools[8] = True
         if self.cooldown() == True:
-            self.canvas.move(self.animate_rect, 300, 0)
-            self.current_pos = 300
+            self.canvas.move(self.animate_rect, 0, -100)
+            self.current_pos = 100
             self.reveal()
             top_chance = 0
             draws = 1
@@ -217,28 +226,28 @@ Gambling""",\
             maxedchance = 100 - percentile
             top_chance = maxedchance + chance
             self.draw_chance = top_chance
-            self.rarity("grey", "Common", 1, 0,'')
-            self.rarity("Lightgreen", "Uncommon", 2, 50,'')
-            self.rarity("Lightblue", "Rare", 7, 75,'')
-            self.rarity("purple", "Epic", 40, 83.5,'')
-            self.rarity("red", "Mythic", 100, 92, '')
-            self.rarity("yellow", "Legendary", 150, 95,'')
-            self.rarity("black", "Unknown-", 700, 98,'self.canvas.itemconfigure(self.result_text, fill="white")')
-            self.rarity("black", "Unknown", 4000, 99.5, 'self.canvas.itemconfigure(self.result_text, fill="white")')
-            self.rarity("black", "Unknown+", 45000, 99.75, 'self.canvas.itemconfigure(self.result_text, fill="white")')
-            self.rarity("cyan", "Immortal-", 450000, 99.9, '')
-            self.rarity("cyan", "Immortal", 4500000, 99.925, 'self.bools[3] = True')
-            self.rarity("cyan", "Immortal+", 45000000, 99.99, '')
-            self.rarity("white", "Beyond-", 450000000, 99.999, '')
-            self.rarity("white", "Beyond", 4500000000, 99.99975, '')
-            self.rarity("white", "Beyond+", 45000000000, 99.99999, '')
-            self.rarity("red", "Infernal-", 450000000000, 99.9999975, '')
-            self.rarity("red", "Infernal", 4500000000000, 99.9999995, '')
-            self.rarity("red", "Infernal+", 45000000000000, 99.9999999, '')
-            self.rarity("yellow", "Celestial-", 450000000000000, 99.999999975, '')
-            self.rarity("yellow", "Celestial", 4500000000000000, 99.999999995, '')
-            self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True')
-            self.rarity("green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()')
+            self.rarity("grey", "Common", 1, 0,'', "black")
+            self.rarity("Lightgreen", "Uncommon", 2, 50,'', "black")
+            self.rarity("Lightblue", "Rare", 7, 75,'', "black")
+            self.rarity("purple", "Epic", 40, 83.5,'', "black")
+            self.rarity("red", "Mythic", 100, 92, '', "red")
+            self.rarity("yellow", "Legendary", 150, 95,'', "red")
+            self.rarity("black", "Unknown-", 700, 98,'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity("black", "Unknown", 4000, 99.5, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity("black", "Unknown+", 45000, 99.75, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity("cyan", "Immortal-", 450000, 99.9, '', "yellow")
+            self.rarity("cyan", "Immortal", 4500000, 99.925, 'self.bools[3] = True', "yellow")
+            self.rarity("cyan", "Immortal+", 45000000, 99.99, '', "yellow")
+            self.rarity("white", "Beyond-", 450000000, 99.999, '', "yellow")
+            self.rarity("white", "Beyond", 4500000000, 99.99975, '', "yellow")
+            self.rarity("white", "Beyond+", 45000000000, 99.99999, '', "yellow")
+            self.rarity("red", "Infernal-", 450000000000, 99.9999975, '', "cyan")
+            self.rarity("red", "Infernal", 4500000000000, 99.9999995, '', "cyan")
+            self.rarity("red", "Infernal+", 45000000000000, 99.9999999, '', "cyan")
+            self.rarity("yellow", "Celestial-", 450000000000000, 99.999999975, '', "cyan")
+            self.rarity("yellow", "Celestial", 4500000000000000, 99.999999995, '', "cyan")
+            self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True', "cyan")
+            self.rarity("green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()', "black")
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
