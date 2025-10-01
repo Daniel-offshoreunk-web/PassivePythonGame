@@ -117,7 +117,12 @@ Gambling""",\
                                                           outline="black")
         self.a_button_text = self.canvas.create_text(375, 250, text="Achivements", fill="black",\
                                                      font=("Impact", 25, "bold"))
-
+        #Event Button Place Holder
+        self.event_button_rect = self.canvas.create_rectangle(133, 100, 500, 200, fill="yellow3", \
+                                                              outline="black")
+        self.event_button_text = self.canvas.create_text(280, 150, text="""Events coming
+soonish...""", fill="black", font=("Impact", 25, ""))
+        
         #Info
         self.list_frame = Frame(self.canvas, background="#FFFFFF", width=10, height=20)
         self.canvas.create_window((0, 0), window=self.list_frame, anchor="nw")
@@ -165,6 +170,10 @@ Gambling""",\
         self.canvas.tag_bind(self.a_button_rect, "<Leave>", self.leave_a)
         self.canvas.tag_bind(self.a_button_text, "<Enter>", self.enter_a)
         self.canvas.tag_bind(self.a_button_text, "<Leave>", self.leave_a)
+        self.canvas.tag_bind(self.event_button_rect, "<Enter>", self.enter_e)
+        self.canvas.tag_bind(self.event_button_rect, "<Leave>", self.leave_e)
+        self.canvas.tag_bind(self.event_button_text, "<Enter>", self.enter_e)
+        self.canvas.tag_bind(self.event_button_text, "<Leave>", self.leave_e)
         
 
         #Save on Exit
@@ -429,6 +438,10 @@ Gambling""",\
     def leave_p(self, event):
         self.canvas.itemconfigure(self.button_rect, fill="white")
         self.canvas.itemconfigure(self.button_text, fill="black")
+    def enter_e(self, event):
+        self.canvas.itemconfigure(self.event_button_rect, fill="yellow")
+    def leave_e(self, event):
+        self.canvas.itemconfigure(self.event_button_rect, fill="yellow3")
         
 
 try:
