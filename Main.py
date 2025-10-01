@@ -57,7 +57,7 @@ class Game:
         self.prestiges = game_data[10]
         self.drawsingame = 0
         if offlinetime > 3600:
-            bools[10] = True
+            self.bools[10] = True
         
         #Cash
         self.cash_var = StringVar()
@@ -106,6 +106,11 @@ Gambling""",\
                                                         outline="black")
         self.result_text = self.canvas.create_text(150,450, text="", fill="black",\
                                                    font=("Impact",45, "bold"))
+
+        #Cover for Output
+        self.animate_rect = self.canvas.create_rectangle(-300, 400, 0, 500, \
+                                                         fill = "black", \
+                                                         outline = "black")
 
         #Achivements Button
         self.a_button_rect = self.canvas.create_rectangle(250, 200, 500, 300, fill="yellow3", \
@@ -186,7 +191,11 @@ Gambling""",\
             self.cash += number * self.cv
             if not extra == '':
                 exec(extra)
-        
+    def reveal(self):
+        if self.current_pos > 0:
+            self.canvas.move(self.animate_rect, -1, 0)
+            self.current_pos -= 1
+            self.tk.after(1, self.reveal)
     def ondraw(self, event):
         self.bools[1] = True
         self.drawsingame += 1
@@ -195,6 +204,9 @@ Gambling""",\
         if self.drawsingame >= 1000:
             self.bools[8] = True
         if self.cooldown() == True:
+            self.canvas.move(self.animate_rect, 300, 0)
+            self.current_pos = 300
+            self.reveal()
             top_chance = 0
             draws = 1
             if self.luck >= 1:
