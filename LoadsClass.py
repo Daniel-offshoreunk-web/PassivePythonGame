@@ -72,15 +72,31 @@ class loads:
         #Main Loop
         self.tk.mainloop()
     def create_account(self):
+        global df
         self.answer = self.input_box.get()
         self.answer1 = self.input_box1.get()
         try:
             if not df['Username'].eq(self.answer).any() == True:
-                df.loc[len(df)] = [0.0, 0.0, 10, 1, 100, 1, 100, time.time(), 1, self.answer, self.answer1, "100000000000"]
-                self.row = len(df) - 1
+                newdf = pd.DataFrame({
+                    "Cash": [0.0],
+                    "Cps": [0.0],
+                    "Cm": [1],
+                    "Cm Cost": [100],
+                    "Cv": [1],
+                    "Cv_Cost": [100],
+                    "Last Online": [time.time()],
+                    "Luck": [1],
+                    "Username": [self.answer],
+                    "Password": [self.answer1],
+                    "Achivements": ["100000000000"],
+                    "Prestiges": [0]
+                    })
+                df = pd.concat([df, newdf], ignore_index=True)
+                self.row = len(df.index) -1
                 self.access_granted = True
                 self.tk.destroy()
         except Exception as e:
+            print(e)
             self.failure = e
     def load_game(self):
         global df
@@ -106,3 +122,4 @@ class loads:
         with open("GameMainFrame.csv","w") as f:
             f.write("Saving...")
         df.to_csv('GameMainFrame.csv', index=False)
+
