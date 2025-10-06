@@ -16,7 +16,10 @@ def reset():
         "Username": ["PLAYERONE"],
         "Password": ["password"],
         "Achivements": ["100000000000"],
-        "Prestiges": [0]
+        "Prestiges": [0],
+        "Treats": [0],
+        "Cash Multi": [1.00],
+        "Luck Multi": [1.00]
         })
     with open("GameMainFrame.csv", "w") as f:
         f.close()

@@ -80,6 +80,7 @@ class loads:
                 newdf = pd.DataFrame({
                     "Cash": [0.0],
                     "Cps": [0.0],
+                    "Cps Cost": [10],
                     "Cm": [1],
                     "Cm Cost": [100],
                     "Cv": [1],
@@ -89,22 +90,24 @@ class loads:
                     "Username": [self.answer],
                     "Password": [self.answer1],
                     "Achivements": ["100000000000"],
-                    "Prestiges": [0]
+                    "Prestiges": [0],
+                    "Treats": [0],
+                    "Cash Multi": [1.00],
+                    "Luck Multi": [1.00]
                     })
                 df = pd.concat([df, newdf], ignore_index=True)
                 self.row = len(df.index) -1
                 self.access_granted = True
                 self.tk.destroy()
         except Exception as e:
-            print(e)
             self.failure = e
     def load_game(self):
         global df
         stuff = []
         for i in range(9):
             stuff.append(df.iat[self.row,i])
-        stuff.append(df.iat[self.row, 11])
-        stuff.append(df.iat[self.row, 12])
+        for i in range(5):
+            stuff.append(df.iat[self.row, i + 11])
         return stuff
     def save_game(self, gameclass, string):
         global df
@@ -119,6 +122,9 @@ class loads:
         df.iloc[self.row,8] = gameclass.luck
         df.iloc[self.row,11] = string
         df.iloc[self.row,12] = gameclass.prestiges
+        df.iloc[self.row, 13] = gameclass.treats
+        df.iloc[self.row, 14] = gameclass.cash_multi
+        df.iloc[self.row, 15] = gameclass.luck_multi
         with open("GameMainFrame.csv","w") as f:
             f.write("Saving...")
         df.to_csv('GameMainFrame.csv', index=False)

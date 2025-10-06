@@ -4,6 +4,7 @@ import random
 from LoadsClass import *
 from ResetCSV import *
 from Achivements import *
+from Events import *
 
 #Format Number Function
 def format_number(num):
@@ -58,6 +59,10 @@ class Game:
         self.drawsingame = 0
         if offlinetime > 3600:
             self.bools[10] = True
+        #Soon to be loaded vars
+        self.treats = game_data[11]
+        self.cash_multi = game_data[12]
+        self.luck_multi = game_data[13]
         
         #Cash
         self.cash_var = StringVar()
@@ -117,11 +122,10 @@ Gambling""",\
                                                           outline="black")
         self.a_button_text = self.canvas.create_text(375, 250, text="Achivements", fill="black",\
                                                      font=("Impact", 25, "bold"))
-        #Event Button Place Holder
-        self.event_button_rect = self.canvas.create_rectangle(133, 100, 500, 200, fill="yellow3", \
+        #Event Button
+        self.event_button_rect = self.canvas.create_rectangle(133, 100, 500, 200, fill="black", \
                                                               outline="black")
-        self.event_button_text = self.canvas.create_text(280, 150, text="""Events coming
-soonish...""", fill="black", font=("Impact", 25, ""))
+        self.event_button_text = self.canvas.create_text(301, 150, text="""Halloween Event""", fill="orange", font=("Impact", 35, ""))
         
         #Info
         self.list_frame = Frame(self.canvas, background="#FFFFFF", width=10, height=20)
@@ -174,6 +178,8 @@ soonish...""", fill="black", font=("Impact", 25, ""))
         self.canvas.tag_bind(self.event_button_rect, "<Leave>", self.leave_e)
         self.canvas.tag_bind(self.event_button_text, "<Enter>", self.enter_e)
         self.canvas.tag_bind(self.event_button_text, "<Leave>", self.leave_e)
+        self.canvas.tag_bind(self.event_button_rect, "<Button-1>", self.events)
+        self.canvas.tag_bind(self.event_button_text, "<Button-1>", self.events)
         
 
         #Save on Exit
@@ -193,20 +199,13 @@ soonish...""", fill="black", font=("Impact", 25, ""))
             return True
         else:
             return False
-    def rarity(self, color, name, number, req, extra, reveal_color):
+    def rarity(self, treatstogain, color, name, number, req, extra, reveal_color):
         if self.draw_chance > req:
             self.canvas.itemconfigure(self.result_rect, fill=color)
             self.canvas.itemconfigure(self.result_text, text=name, fill="black")
             self.canvas.itemconfigure(self.animate_rect, fill=reveal_color)
-            self.cash += number * self.cv
-            if not extra == '':
-                exec(extra)
-    def raritynew(self, color, name, number, req, extra, reveal_color):
-        if self.draw_chance > req:
-            self.canvas.itemconfigure(self.result_rect, fill=color)
-            self.canvas.itemconfigure(self.result_text, text=name, fill="black")
-            self.canvas.itemconfigure(self.animate_rect, fill=reveal_color)
-            self.cash += number * self.cv
+            self.cash += number * self.cv * self.cash_multi
+            self.treats += treatstogain
             if not extra == '':
                 exec(extra)
     def reveal(self):
@@ -222,12 +221,15 @@ soonish...""", fill="black", font=("Impact", 25, ""))
         if self.drawsingame >= 1000:
             self.bools[8] = True
         if self.cooldown() == True:
-            self.canvas.move(self.animate_rect, 0, -100)
+            prevcoords = self.canvas.coords(self.animate_rect)
+            self.canvas.coords(self.animate_rect, prevcoords[0], \
+                               400, prevcoords[2], 500) 
             self.current_pos = 100
             self.reveal()
             top_chance = 0
             draws = 1
-            if self.luck >= 1:
+            luckfordraws = self.luck * self.luck_multi
+            if luckfordraws >= 1:
                 draws = self.luck
             draws = round(draws)
             percentile = 100 / draws
@@ -235,28 +237,28 @@ soonish...""", fill="black", font=("Impact", 25, ""))
             maxedchance = 100 - percentile
             top_chance = maxedchance + chance
             self.draw_chance = top_chance
-            self.rarity("grey", "Common", 1, 0,'', "black")
-            self.rarity("Lightgreen", "Uncommon", 2, 50,'', "black")
-            self.rarity("Lightblue", "Rare", 7, 75,'', "black")
-            self.rarity("purple", "Epic", 40, 83.5,'', "black")
-            self.rarity("red", "Mythic", 100, 92, '', "red")
-            self.rarity("yellow", "Legendary", 150, 95,'', "red")
-            self.rarity("black", "Unknown-", 700, 98,'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
-            self.rarity("black", "Unknown", 4000, 99.5, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
-            self.rarity("black", "Unknown+", 45000, 99.75, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
-            self.rarity("cyan", "Immortal-", 450000, 99.9, '', "yellow")
-            self.rarity("cyan", "Immortal", 4500000, 99.925, 'self.bools[3] = True', "yellow")
-            self.rarity("cyan", "Immortal+", 45000000, 99.99, '', "yellow")
-            self.rarity("white", "Beyond-", 450000000, 99.999, '', "yellow")
-            self.rarity("white", "Beyond", 4500000000, 99.99975, '', "yellow")
-            self.rarity("white", "Beyond+", 45000000000, 99.99999, '', "yellow")
-            self.rarity("red", "Infernal-", 450000000000, 99.9999975, '', "cyan")
-            self.rarity("red", "Infernal", 4500000000000, 99.9999995, '', "cyan")
-            self.rarity("red", "Infernal+", 45000000000000, 99.9999999, '', "cyan")
-            self.rarity("yellow", "Celestial-", 450000000000000, 99.999999975, '', "cyan")
-            self.rarity("yellow", "Celestial", 4500000000000000, 99.999999995, '', "cyan")
-            self.rarity("yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True', "cyan")
-            self.rarity("green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()', "black")
+            self.rarity(1, "grey", "Common", 1, 0,'', "black")
+            self.rarity(2, "Lightgreen", "Uncommon", 2, 50,'', "black")
+            self.rarity(2, "Lightblue", "Rare", 7, 75,'', "black")
+            self.rarity(5, "purple", "Epic", 40, 83.5,'', "black")
+            self.rarity(15, "red", "Mythic", 100, 92, '', "red")
+            self.rarity(25, "yellow", "Legendary", 150, 95,'', "red")
+            self.rarity(50, "black", "Unknown-", 700, 98,'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity(150, "black", "Unknown", 4000, 99.5, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity(250, "black", "Unknown+", 45000, 99.75, 'self.canvas.itemconfigure(self.result_text, fill="white")', "red")
+            self.rarity(500, "cyan", "Immortal-", 450000, 99.9, '', "yellow")
+            self.rarity(1500, "cyan", "Immortal", 4500000, 99.925, 'self.bools[3] = True', "yellow")
+            self.rarity(2500, "cyan", "Immortal+", 45000000, 99.99, '', "yellow")
+            self.rarity(5000, "white", "Beyond-", 450000000, 99.999, '', "yellow")
+            self.rarity(15000, "white", "Beyond", 4500000000, 99.99975, '', "yellow")
+            self.rarity(25000, "white", "Beyond+", 45000000000, 99.99999, '', "yellow")
+            self.rarity(50000, "red", "Infernal-", 450000000000, 99.9999975, '', "cyan")
+            self.rarity(150000, "red", "Infernal", 4500000000000, 99.9999995, '', "cyan")
+            self.rarity(250000, "red", "Infernal+", 45000000000000, 99.9999999, '', "cyan")
+            self.rarity(500000, "yellow", "Celestial-", 450000000000000, 99.999999975, '', "cyan")
+            self.rarity(1500000, "yellow", "Celestial", 4500000000000000, 99.999999995, '', "cyan")
+            self.rarity(2500000, "yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True', "cyan")
+            self.rarity(5000000, "green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()', "black")
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
@@ -328,6 +330,9 @@ soonish...""", fill="black", font=("Impact", 25, ""))
     def achivements(self, event):
         self.a = achivements()
         self.a.check_all(self.bools)
+
+    def events(self, event):
+        Event(self)
 
     def luck_boost(self):
         self.luck *= 2
@@ -439,9 +444,11 @@ soonish...""", fill="black", font=("Impact", 25, ""))
         self.canvas.itemconfigure(self.button_rect, fill="white")
         self.canvas.itemconfigure(self.button_text, fill="black")
     def enter_e(self, event):
-        self.canvas.itemconfigure(self.event_button_rect, fill="yellow")
+        self.canvas.itemconfigure(self.event_button_rect, fill="orange")
+        self.canvas.itemconfig(self.event_button_text, fill="black")
     def leave_e(self, event):
-        self.canvas.itemconfigure(self.event_button_rect, fill="yellow3")
+        self.canvas.itemconfigure(self.event_button_rect, fill="black")
+        self.canvas.itemconfig(self.event_button_text, fill="orange")
         
 
 try:
