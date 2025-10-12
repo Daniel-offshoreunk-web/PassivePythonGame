@@ -50,8 +50,6 @@ class Game:
         self.cv = game_data[5]
         self.cv_cost = game_data[6]
         offlinetime = time.time() - game_data[7]
-        offlinecash = offlinetime / 2
-        self.cash += self.cps * offlinecash
         self.luck = game_data[8]
         string11 = str(game_data[9])
         self.bools = achivements.breaktobool(string11)
@@ -59,12 +57,12 @@ class Game:
         self.drawsingame = 0
         if offlinetime > 3600:
             self.bools[10] = True
-        #Soon to be loaded vars
         self.treats = game_data[11]
         self.cash_multi = game_data[12]
         self.luck_multi = game_data[13]
         
         #Cash
+        self.previous_cash = self.cash
         self.cash_var = StringVar()
         self.cash_var.set(f"Cash: ${format_number(self.cash)}")
         self.cash_text = Label(self.main_frame, textvariable=self.cash_var, \
@@ -89,13 +87,13 @@ class Game:
         #Upgrade Cps
         self.upgrade_button_rect =  self.canvas.create_rectangle(250, 300, 500, 400, fill="cyan3", \
                                                                  outline="black")
-        self.upgrade_button_text = self.canvas.create_text(375, 350, text='Upgrade CPS',\
+        self.upgrade_button_text = self.canvas.create_text(375, 350, text='Upgrade CPC',\
                                                            fill="black", \
                                                            font=("Impact",25,"bold"))
         #Upgrade Cps%
         self.cm_upgrade_button_rect = self.canvas.create_rectangle(0, 300, 250, 400, fill="cyan3", \
                                                                    outline="black")
-        self.cm_upgrade_button_text = self.canvas.create_text(125, 350, text="Upgrade CPS%",\
+        self.cm_upgrade_button_text = self.canvas.create_text(125, 350, text="Upgrade CPC%",\
                                                            fill="black", font=("Impact",25,"bold"))
         #Upgrade Card Value & Luck
         self.cv_upgrade_button_rect = self.canvas.create_rectangle(0, 200, 250, 300, fill="green", \
@@ -259,6 +257,9 @@ Gambling""",\
             self.rarity(1500000, "yellow", "Celestial", 4500000000000000, 99.999999995, '', "cyan")
             self.rarity(2500000, "yellow", "Celestial+", 4500000000000000, 99.999999999, 'self.bools[4] = True', "cyan")
             self.rarity(5000000, "green", "DONE!", -5000000000000000, 99.9999999999, 'self.prestige_time()', "black")
+            if not self.cash == self.previous_cash:
+                self.cash += self.cps * self.cm
+                self.previous_cash = self.cash
             self.cash_var.set(f"Cash: ${format_number(self.cash)}")
 
     def cpsupgrade(self, event):
@@ -268,31 +269,33 @@ Gambling""",\
             cost_of_next_upgrade = self.cps_cost
             upgrades_to_buy = 0
             total_cost = 0
-            if not cash_available >= 1000 * cost_of_next_upgrade:
+            multoften = 1
+            finished = False
+            for i in range(len(str(self.cash))):
+                while finished == False:
+                    if cost_of_next_upgrade * multoften <= cash_available:
+                        multoften *= 10
+                        print(multoften)
+                    else:
+                        finished = True
                 while cash_available >= cost_of_next_upgrade:
-                    cash_available -= cost_of_next_upgrade
-                    total_cost += cost_of_next_upgrade
-                    cost_of_next_upgrade += 5
-                    upgrades_to_buy += 1
-            elif not cash_available >= 1000000:
-                while cash_available >= cost_of_next_upgrade * 100:
-                    cash_available -= 100 * cost_of_next_upgrade
-                    total_cost += 100 * cost_of_next_upgrade
-                    cost_of_next_upgrade += 500
-                    upgrades_to_buy += 100
-                        
-            else:
-                while cash_available >= cost_of_next_upgrade * 100000:
-                    cash_available -= 100000 * cost_of_next_upgrade
-                    total_cost += 100000 * cost_of_next_upgrade
-                    cost_of_next_upgrade += 500000
-                    upgrades_to_buy += 100000
+                    cash_available -= int(cost_of_next_upgrade * multoften)
+                    upgrades_to_buy += int(multoften)
+                    total_cost += int(cost_of_next_upgrade * multoften)
+                    cost_of_next_upgrade += int(multoften * 5)
+                    if self.cash < total_cost:
+                        cash_available += int(cost_of_next_upgrade * multoften)
+                        upgrades_to_buy -= int(multoften)
+                        total_cost -= int(cost_of_next_upgrade * multoften)
+                        cost_of_next_upgrade -= int(multoften * 5)
+                        break
             if upgrades_to_buy > 0:
                 ogcps = self.cps
                 self.cash -= total_cost
+                self.cps_cost = cost_of_next_upgrade
                 self.cash_var.set(f"Cash: ${format_number(self.cash)}")
                 self.cps += upgrades_to_buy
-                full_string = f"Cps upgraded from {format_number(ogcps)} to {format_number(self.cps)}."
+                full_string = f"CPC upgraded from {format_number(ogcps)} to {format_number(self.cps)}."
                 self.info_list.insert("0.0", full_string+'\n')
             else:
                 full_string = f"You need ${format_number(self.cps_cost)} to upgrade this."
@@ -347,8 +350,6 @@ Gambling""",\
         
     def update_cash_display(self):
         #Also manages boosts and prestige
-        self.cash += self.cps * self.cm
-        self.cash_var.set(f"Cash: ${format_number(self.cash)}")
         
         if random.random() >= 0.998:
             self.info_list.insert("0.0","Luck boost is activate for five minutes!\n")
@@ -366,8 +367,11 @@ Gambling""",\
             self.bt_luck -= 1
         if not self.sbt_luck == 0:
             self.sbt_luck -= 1
-        if self.cash >= 1000000000000000000:
+        pplusone = self.prestiges + 1
+        if self.cash >= 1000000000000000000 * pplusone:
             self.prestige_time()
+        self.cash = int(round(self.cash))
+        self.cv_cost = int(round(self.cv_cost))
         
         # Schedule the next call to this function after 1000ms (1 second)
         self.tk.after(1000, self.update_cash_display)

@@ -78,7 +78,7 @@ class loads:
         try:
             if not df['Username'].eq(self.answer).any() == True:
                 newdf = pd.DataFrame({
-                    "Cash": [0.0],
+                    "Cash": [0],
                     "Cps": [0.0],
                     "Cps Cost": [10],
                     "Cm": [1],
@@ -111,13 +111,13 @@ class loads:
         return stuff
     def save_game(self, gameclass, string):
         global df
-        df.iloc[self.row,0] = gameclass.cash
+        df.iloc[self.row,0] = int(round(gameclass.cash))
         df.iloc[self.row,1] = gameclass.cps
         df.iloc[self.row,2] = gameclass.cps_cost
         df.iloc[self.row,3] = gameclass.cm
         df.iloc[self.row,4] = gameclass.cm_cost
         df.iloc[self.row,5] = gameclass.cv
-        df.iloc[self.row,6] = gameclass.cv_cost
+        df.iloc[self.row,6] = int(round(gameclass.cv_cost))
         df.iloc[self.row,7] = time.time()
         df.iloc[self.row,8] = gameclass.luck
         df.iloc[self.row,11] = string
